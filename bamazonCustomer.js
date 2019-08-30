@@ -12,12 +12,15 @@ const connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  runSearch();
+  console.log("Connected as id: " + connection.threadId);
+  console.log("Welcome to Bamazon!" + "\n");
+
+  displayContent();
 });
 
 function runSearch() {
-  console.log("Connected as id: " + connection.threadId);
-  console.log("Welcome to Bamazon!");
+  // console.log("Connected as id: " + connection.threadId);
+  // console.log("Welcome to Bamazon!" + "\n");
   inquirer
     .prompt({
       name: "action",
@@ -35,7 +38,7 @@ function runSearch() {
       //switch case
       switch (answer.action) {
         case "Show all items":
-          showAllItems();
+          // showAllItems();
           break;
 
         case "Find all artists who appear more than once":
@@ -58,8 +61,35 @@ function runSearch() {
   //run in terminal to make sure there's a connection (node GreatBay.js)
 }
 
-function showAllItems() {
-  // // connection.connect();
+// function showAllItems() {
+//   // // connection.connect();
+//   var contentQuery = "SELECT * FROM products;";
+//   connection.query(contentQuery, function(err, results) {
+//     if (err) {
+//       console.log("A error has occured.");
+//       console.log(err);
+//     }
+//     var contentArray = [];
+//     for (var i = 0; i < results.length; i++) {
+//       contentArray.push(results[i]);
+//       // console.log(contentArray);
+//       console.log(
+//         "\n" +
+//           "ID: " +
+//           results[i].item_id +
+//           "\nName: " +
+//           results[i].product_name +
+//           "\nPrice: " +
+//           "$" +
+//           results[i].price +
+//           "\n=================\n"
+//       );
+//     }
+//     runSearch();
+//   });
+// }
+
+function displayContent() {
   var contentQuery = "SELECT * FROM products;";
   connection.query(contentQuery, function(err, results) {
     if (err) {
@@ -71,15 +101,15 @@ function showAllItems() {
       contentArray.push(results[i]);
       // console.log(contentArray);
       console.log(
-        "\n" +
-          "ID: " +
+        "|| ID: " +
           results[i].item_id +
-          "\nName: " +
+          " || Name: " +
           results[i].product_name +
-          "\nPrice: " +
+          " || Price: " +
           "$" +
           results[i].price +
-          "\n=================\n"
+          " ||" +
+          "\n"
       );
     }
     runSearch();
