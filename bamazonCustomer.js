@@ -12,8 +12,15 @@ const connection = mysql.createConnection({
 
 connection.connect(function(err) {
   if (err) throw err;
-  console.log("Connected as id: " + connection.threadId);
-  console.log("Welcome to Bamazon!" + "\n");
+  console.log(
+    "Connected as id: " +
+      connection.threadId +
+      "\n" +
+      "\n" +
+      "Welcome to Bamazon!" +
+      "\n"
+  );
+  // console.log("Welcome to Bamazon!" + "\n");
 
   displayContent();
 });
