@@ -1,3 +1,4 @@
+//using npm and mysql for application
 const mysql = require("mysql");
 const inquirer = require("inquirer");
 
