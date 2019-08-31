@@ -26,15 +26,13 @@ connection.connect(function(err) {
 });
 
 function runSearch() {
-  // console.log("Connected as id: " + connection.threadId);
-  // console.log("Welcome to Bamazon!" + "\n");
   inquirer
     .prompt({
       name: "action",
       type: "rawlist",
       message: "Please make a selection",
       choices: [
-        "Show all items",
+        "Find item by ID",
         "Find all artists who appear more than once",
         "Find data with a specific range",
         "Find for a specific song",
@@ -44,8 +42,8 @@ function runSearch() {
     .then(function(answer) {
       //switch case
       switch (answer.action) {
-        case "Show all items":
-          // showAllItems();
+        case "Find item by ID":
+          searchById();
           break;
 
         case "Find all artists who appear more than once":
@@ -68,33 +66,79 @@ function runSearch() {
   //run in terminal to make sure there's a connection (node GreatBay.js)
 }
 
-// function showAllItems() {
-//   // // connection.connect();
-//   var contentQuery = "SELECT * FROM products;";
-//   connection.query(contentQuery, function(err, results) {
-//     if (err) {
-//       console.log("A error has occured.");
-//       console.log(err);
-//     }
-//     var contentArray = [];
-//     for (var i = 0; i < results.length; i++) {
-//       contentArray.push(results[i]);
-//       // console.log(contentArray);
-//       console.log(
-//         "\n" +
-//           "ID: " +
-//           results[i].item_id +
-//           "\nName: " +
-//           results[i].product_name +
-//           "\nPrice: " +
-//           "$" +
-//           results[i].price +
-//           "\n=================\n"
-//       );
-//     }
-//     runSearch();
-//   });
-// }
+function searchById() {
+  inquirer
+    .prompt([
+      {
+        name: "id",
+        type: "input",
+        message: "What is the id of the item you wish to purchase? ",
+        filter: Number
+        // validate: function(value) {
+        //   if (isNaN(value) === false) {
+        //     return true;
+        //   }
+        //   return false;
+        // }
+      },
+      {
+        name: "units",
+        type: "input",
+        message: "How many units would you like to buy?",
+        filter: Number
+        // validate: function(value) {
+        //   if (isNaN(value) === false) {
+        //     return true;
+        //   }
+        //   return false;
+        // }
+      }
+    ])
+    .then(function(answer) {
+      var productId = answer.id;
+      var productQuantity = answer.units;
+      newPurchase(productId, productQuantity);
+    });
+}
+
+function newPurchase(id, amountOfProduct) {
+  connection.query("SELECT * FROM products WHERE item_id = " + id, function(
+    err,
+    results
+  ) {
+    if (err) {
+      console.log("Error has occured");
+    }
+    if (amountOfProduct <= results[0].stock_quantity) {
+      var totalCost = results[0].price * amountOfProduct;
+      console.log();
+      console.log("Order is in stock!");
+      console.log(
+        "Your total cost for " +
+          amountOfProduct +
+          " " +
+          results[0].product_name +
+          " is " +
+          totalCost +
+          " . "
+      );
+
+      connection.query(
+        "UPDATE products SET stock_quantity = stock_quantity - " +
+          amountOfProduct +
+          " WHERE item_id = " +
+          id
+      );
+    } else {
+      console.log(
+        "Insufficient quantity, sorry we do not have enough " +
+          results[0].product_name +
+          "to complete your order."
+      );
+    }
+    displayContent();
+  });
+}
 
 function displayContent() {
   var contentQuery = "SELECT * FROM products;";
