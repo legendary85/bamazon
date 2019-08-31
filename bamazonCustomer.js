@@ -25,47 +25,6 @@ connection.connect(function(err) {
   displayContent();
 });
 
-function runSearch() {
-  inquirer
-    .prompt({
-      name: "action",
-      type: "rawlist",
-      message: "Please make a selection",
-      choices: [
-        "Find item by ID",
-        "Find all artists who appear more than once",
-        "Find data with a specific range",
-        "Find for a specific song",
-        "Find artists with a top song and top album in the same year"
-      ]
-    })
-    .then(function(answer) {
-      //switch case
-      switch (answer.action) {
-        case "Find item by ID":
-          searchById();
-          break;
-
-        case "Find all artists who appear more than once":
-          multiSearch();
-          break;
-
-        case "Find data with a specific range":
-          rangeSearch();
-          break;
-
-        case "Find for a specific song":
-          songSearch();
-          break;
-
-        case "Find artists with a top song and top album in the same year":
-          songAndAlbumSearch();
-          break;
-      }
-    });
-  //run in terminal to make sure there's a connection (node GreatBay.js)
-}
-
 function searchById() {
   inquirer
     .prompt([
@@ -73,34 +32,28 @@ function searchById() {
         name: "id",
         type: "input",
         message: "What is the id of the item you wish to purchase? ",
+        /* filter: (Function) Receive the user input and return the filtered value to be used inside the program. The value returned will be added to the Answers hash. */
         filter: Number
-        // validate: function(value) {
-        //   if (isNaN(value) === false) {
-        //     return true;
-        //   }
-        //   return false;
-        // }
       },
       {
         name: "units",
         type: "input",
         message: "How many units would you like to buy?",
+        /* filter: (Function) Receive the user input and return the filtered value to be used inside the program. The value returned will be added to the Answers hash. */
         filter: Number
-        // validate: function(value) {
-        //   if (isNaN(value) === false) {
-        //     return true;
-        //   }
-        //   return false;
-        // }
       }
     ])
     .then(function(answer) {
+      //Declared answer.id and and answer.units as variables to pass into
+      //newPurchase() function.
       var productId = answer.id;
       var productQuantity = answer.units;
+      //
       newPurchase(productId, productQuantity);
     });
 }
 
+//Declared a newPurchase function to pass paramaters into
 function newPurchase(id, amountOfProduct) {
   connection.query("SELECT * FROM products WHERE item_id = " + id, function(
     err,
@@ -111,7 +64,7 @@ function newPurchase(id, amountOfProduct) {
     }
     if (amountOfProduct <= results[0].stock_quantity) {
       var totalCost = results[0].price * amountOfProduct;
-      console.log();
+      console.log(results[0]);
       console.log("Order is in stock!");
       console.log(
         "Your total cost for " +
@@ -120,7 +73,8 @@ function newPurchase(id, amountOfProduct) {
           results[0].product_name +
           " is " +
           totalCost +
-          " . "
+          " . " +
+          "\n"
       );
 
       connection.query(
@@ -140,6 +94,7 @@ function newPurchase(id, amountOfProduct) {
   });
 }
 
+//function will display all content in bamazon database
 function displayContent() {
   var contentQuery = "SELECT * FROM products;";
   connection.query(contentQuery, function(err, results) {
@@ -163,6 +118,47 @@ function displayContent() {
           "\n"
       );
     }
-    runSearch();
+    searchById();
   });
 }
+
+/* runSearch function with switch statements for later use */
+// function runSearch() {
+//   inquirer
+//     .prompt({
+//       name: "action",
+//       type: "rawlist",
+//       message: "Please make a selection",
+//       choices: [
+//         "Find item by ID"
+//         "Find all artists who appear more than once",
+//         "Find data with a specific range",
+//         "Find for a specific song",
+//         "Find artists with a top song and top album in the same year"
+//       ]
+//     })
+//     .then(function(answer) {
+//       //switch case
+//       switch (answer.action) {
+//         case "Find item by ID":
+//           searchById();
+//           break;
+
+//         case "Find all artists who appear more than once":
+//           multiSearch();
+//           break;
+
+//         case "Find data with a specific range":
+//           rangeSearch();
+//           break;
+
+//         case "Find for a specific song":
+//           songSearch();
+//           break;
+
+//         case "Find artists with a top song and top album in the same year":
+//           songAndAlbumSearch();
+//           break;
+//       }
+//     });
+// }
