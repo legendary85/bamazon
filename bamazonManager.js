@@ -85,6 +85,34 @@ function forSale() {
     promptInventoryOptions();
   });
 }
+function lowInventory() {
+  var contentQuery = "SELECT * FROM products WHERE stock_quantity < 5";
+  connection.query(contentQuery, function(err, results) {
+    if (err) {
+      console.log("An error has occured.");
+      console.log(err);
+    }
+    var forSaleArray = [];
+    for (var i = 0; i < results.length; i++) {
+      forSaleArray.push(results[i]);
+      // console.log(forSaleArray);
+      console.log(
+        "|| ID: " +
+          results[i].item_id +
+          " || Name: " +
+          results[i].product_name +
+          " || Price: " +
+          "$" +
+          results[i].price +
+          " ||" +
+          " Quantity: " +
+          results[i].stock_quantity +
+          "\n"
+      );
+    }
+    promptInventoryOptions();
+  });
+}
 
 function addProduct() {
   inquirer
@@ -141,13 +169,15 @@ function newItem(id, name, category, price, quantity) {
   promptInventoryOptions();
 }
 
+//add inventory will allow user to add additional quantities to exising items in inventory
 function addToInventory() {
   inquirer
     .prompt([
       {
         name: "item_id",
         type: "input",
-        message: "What is the id number of the item you want to restock?"
+        message: "What is the id number of the item you want to restock?",
+        filter: Number
       },
       {
         name: "quantity",
