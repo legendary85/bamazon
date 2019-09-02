@@ -141,12 +141,55 @@ function newItem(id, name, category, price, quantity) {
   promptInventoryOptions();
 }
 
-function addToInventory(){
-  inquirer.prompt(id, quantity){
-    connection.query('SELECT * FROM products WHERE item_id = '+id, function(err,results){
-      if(err) throw err;
-      connection.query('UPDATE products SET stock_quantity = stock_quantity + ' +stock_quantity+ 'WHERE item_id =' +item_id);
-      promptInventoryOptions();
+function addToInventory() {
+  inquirer
+    .prompt([
+      {
+        name: "item_id",
+        type: "input",
+        message: "What is the id number of the item you want to restock?"
+      },
+      {
+        name: "quantity",
+        type: "input",
+        message: "What is the quantity you would like to add?",
+        filter: Number
+      }
+    ])
+    .then(function(answer) {
+      var itemId = answer.item_id;
+      var itemQuantity = answer.quantity;
+      // addToInventory(itemId, itemQuantity);
+
+      var query = "SELECT * FROM products WHERE ?";
+      connection.query(query, { item_id: itemId }, function(err, results) {
+        if (err || results.length === 0) {
+          console.log("Error");
+          addToInventory();
+        } else {
+          console.log("Updating Inventory...");
+          var updateQuery =
+            "UPDATE products SET stock_quantity = " +
+            (results[0].stock_quantity + itemQuantity) +
+            " WHERE item_id = " +
+            itemId;
+
+          connection.query(updateQuery, function(err, results) {
+            if (err) {
+              console.log("ERROR");
+            } else {
+              console.log(
+                "Stock count for item ID " +
+                  itemId +
+                  " has been updated to " +
+                  (results[0].stock_quantity + itemQuantity) +
+                  "."
+              );
+              console.log("\n---------------------------------------------\n");
+            }
+          });
+        }
+        promptInventoryOptions();
+      });
     });
-  };
 }
