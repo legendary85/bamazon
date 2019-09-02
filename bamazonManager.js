@@ -85,3 +85,68 @@ function forSale() {
     promptInventoryOptions();
   });
 }
+
+function addProduct() {
+  inquirer
+    .prompt([
+      {
+        name: "ID",
+        type: "input",
+        message: "Add ID Number"
+      },
+      {
+        name: "name",
+        type: "input",
+        message: "What is the name of the item you'd wish to add?"
+      },
+      {
+        name: "Category",
+        type: "input",
+        message: "What is the category of the item?"
+      },
+      {
+        name: "price",
+        type: "input",
+        message: "What is the price for the item?"
+      },
+      {
+        name: "quantity",
+        type: "input",
+        message: "What is the quantity would like to add?"
+      }
+    ])
+    .then(function(answers) {
+      var id = answers.ID;
+      var name = answers.name;
+      var category = answers.Category;
+      var price = answers.price;
+      var quantity = answers.quantity;
+      newItem(id, name, category, price, quantity);
+    });
+}
+function newItem(id, name, category, price, quantity) {
+  connection.query(
+    'INSERT INTO products (item_id,product_name,department_name,price,stock_quantity) VALUES("' +
+      id +
+      '","' +
+      name +
+      '","' +
+      category +
+      '",' +
+      price +
+      "," +
+      quantity +
+      ")"
+  );
+  promptInventoryOptions();
+}
+
+function addToInventory(){
+  inquirer.prompt(id, quantity){
+    connection.query('SELECT * FROM products WHERE item_id = '+id, function(err,results){
+      if(err) throw err;
+      connection.query('UPDATE products SET stock_quantity = stock_quantity + ' +stock_quantity+ 'WHERE item_id =' +item_id);
+      promptInventoryOptions();
+    });
+  };
+}
