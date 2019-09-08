@@ -28,7 +28,11 @@ function promptOptions() {
       name: "action",
       type: "rawlist",
       message: "Please make a selection",
-      choices: ["Add new column"]
+      choices: [
+        "Add new column",
+        "View Product Sales by Department",
+        "Create New Department"
+      ]
     })
     .then(function(answer) {
       //switch case
@@ -36,9 +40,76 @@ function promptOptions() {
         case "Add new column":
           addNewColumn();
           break;
+        case "View Product Sales by Department":
+          viewProductByDept();
+          break;
+        case "Create New Department":
+          createDept();
+          break;
       }
     });
 }
+
+function createDept() {
+  inquirer
+    .prompt([
+      {
+        name: "department_name",
+        type: "input",
+        message: "Enter the name of department"
+      },
+      {
+        name: "over_head_costs",
+        type: "input",
+        message: "Over Head Costs:",
+        default: 0,
+        validate: function(val) {
+          if (isNaN(val) === false) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      },
+      {
+        name: "product_sales",
+        type: "input",
+        message: "Product Sales: ",
+        default: 0,
+        validate: function(val) {
+          if (isNaN(val) === false) {
+            return true;
+          } else {
+            return false;
+          }
+        }
+      }
+    ])
+    .then(function(answer) {
+      let newDeptName = answer.deptName;
+      let newOverHeadCosts = answer.overHeadCosts;
+      let newProductSales = answer.productSales;
+      
+      let deptName = depatment_name: newDeptName;
+      let overHeadCosts = newOverHeadCosts,
+      let product_sales
+
+      alterTable(deptName, overHeadCosts, productSales);
+    });
+}
+
+function alterTable(deptName, overHeadCosts, productSales) {
+  var contentQuery = `INSERT INTO departments SET ? ${deptName}, ${overHeadCosts}, ${productSales};`;
+  console.log(contentQuery);
+  connection.query(contentQuery, function(err, results) {
+    if (err) {
+      console.log("An error has occured.");
+      console.log(err);
+    }
+  });
+}
+
+function viewProductByDept() {}
 
 // create a new function that will take the product * the quantity purchased and add it to the product_sales
 //Function to add colum to table
