@@ -1,6 +1,12 @@
 //using npm and mysql for application
 const mysql = require("mysql");
 const inquirer = require("inquirer");
+const Table = require("cli-table");
+
+var table = new Table({
+  head: ["Item ID", "Item Name", "Price", "Quantity"],
+  colWidths: [15, 50, 20, 15]
+});
 
 //1st I create a connection object to connect to mysql
 const connection = mysql.createConnection({
@@ -91,6 +97,7 @@ function newPurchase(id, amountOfProduct) {
           "to complete your order."
       );
     }
+    connection.close;
     displayContent();
   });
 }
@@ -103,25 +110,38 @@ function displayContent() {
       console.log("A error has occured.");
       console.log(err);
     }
-    var contentArray = [];
+    // var contentArray = [];
     for (var i = 0; i < results.length; i++) {
-      contentArray.push(results[i]);
+      // contentArray.push(results[i]);
+
+      //push results to the npm table table package
+      table.push([
+        results[i].item_id,
+        results[i].product_name,
+        results[i].price.toFixed(2),
+        results[i].stock_quantity
+      ]);
       // console.log(contentArray);
-      console.log(
-        "|| ID: " +
-          results[i].item_id +
-          " || Name: " +
-          results[i].product_name +
-          " || Price: " +
-          "$" +
-          results[i].price +
-          " ||" +
-          "\n"
-      );
+      // console.log(
+      //   "|| ID: " +
+      //     results[i].item_id +
+      //     " || Name: " +
+      //     results[i].product_name +
+      //     " || Price: " +
+      //     "$" +
+      //     results[i].price +
+      //     " ||" +
+      //     "\n"
+      // );
     }
+    //To display content as a  string in the terminal
+    console.log(table.toString());
     searchById();
+    connection.end();
   });
 }
+
+//Code to use for later
 
 /* runSearch function with switch statements for later use */
 // function runSearch() {
